@@ -62,11 +62,12 @@ app.use((err, req, res, next) => {
     stack: err.stack,
   });
 });
+const PORT = process.env.PORT || 8800;
 
-const server = app.listen(process.env.PORT || 8800, () => {
+const server = app.listen(PORT, () => {
   // on connected
   connect();
-  console.log(`Server is running on port ${process.env.PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
 
 const io = new Server(server, {
