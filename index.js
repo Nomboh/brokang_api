@@ -35,12 +35,6 @@ app.use(cors({ origin: "http://localhost:3000" }));
 app.use(express.json({ verify: (req, res, buf) => (req["rawBody"] = buf) }));
 app.use(cookieParser());
 
-//custom middleware
-app.use("/", (req, res, next) => {
-  res.send("Hello world");
-  next();
-});
-
 // routes
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/auth", authRouter);
