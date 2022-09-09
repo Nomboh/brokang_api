@@ -30,6 +30,11 @@ mongoose.connection.on("disconnected", () => {
   console.log("Mongodb disconnected");
 });
 
+app.use("/", (req, res, next) => {
+  res.send("Hello world");
+  next();
+});
+
 // middlewares
 app.use(cors({ origin: "http://localhost:3000" }));
 app.use(express.json({ verify: (req, res, buf) => (req["rawBody"] = buf) }));
