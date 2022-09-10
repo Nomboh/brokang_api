@@ -65,7 +65,7 @@ app.use((err, req, res, next) => {
 const server = app.listen(process.env.PORT || 8800, () => {
   // on connected
   connect();
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${process.env.PORT || 8000}`);
 });
 
 const io = new Server(server, {
