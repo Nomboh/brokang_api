@@ -49,17 +49,11 @@ app.use((err, req, res, next) => {
   });
 });
 
-process.on("uncaughtException", err => {
-  console.log("UNCAUGHT EXCEPTION! 💥 Shutting down...");
-  console.log(err.name, err.message);
-  process.exit(1);
-});
-
 mongoose.connect(process.env.MONGO_DB).then(() => {
   console.log("Mongo DB connected successfully");
 });
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8000;
 
 const server = app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
