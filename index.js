@@ -12,28 +12,20 @@ import message from "./src/routers/message.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import { Server } from "socket.io";
+import compression from "compression";
+import helmet from "helmet";
 
 const app = express();
 dotenv.config();
 
-const connect = async () => {
-  try {
-    await mongoose.connect(process.env.MONGO_DB);
-    console.log("Connected to MongoDB");
-  } catch (err) {
-    throw err;
-  }
-};
-
-// on disconnected
-mongoose.connection.on("disconnected", () => {
-  console.log("Mongodb disconnected");
-});
-
 // middlewares
-app.use(cors({ origin: "http://localhost:3000" }));
+app.enable("trust proxy");
+app.use(cors());
+app.use(helmet());
 app.use(express.json({ verify: (req, res, buf) => (req["rawBody"] = buf) }));
 app.use(cookieParser());
+
+app.use(compression());
 
 // routes
 app.use("/api/v1/user", userRouter);
@@ -57,15 +49,40 @@ app.use((err, req, res, next) => {
   });
 });
 
-const server = app.listen(process.env.PORT || 8800, () => {
-  // on connected
-  connect();
-  console.log(`Server is running on port ${process.env.PORT || 8800}`);
+process.on("uncaughtException", err => {
+  console.log("UNCAUGHT EXCEPTION! 💥 Shutting down...");
+  console.log(err.name, err.message);
+  process.exit(1);
+});
+
+mongoose.connect(process.env.MONGO_DB).then(() => {
+  console.log("Mongo DB connected successfully");
+});
+
+const port = process.env.PORT || 3000;
+
+const server = app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
+
+process.on("unhandledRejection", err => {
+  console.log("UNHANDLED REJECTION! 💥 Shutting down...");
+  console.log(err.name, err.message);
+  server.close(() => {
+    process.exit(1);
+  });
+});
+
+process.on("SIGTERM", () => {
+  console.log("👋 SIGTERM RECEIVED. Shutting down gracefully");
+  server.close(() => {
+    console.log("💥 Process terminated!");
+  });
 });
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "http://localhost:3001",
   },
 });
 
