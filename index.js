@@ -30,11 +30,6 @@ mongoose.connection.on("disconnected", () => {
   console.log("Mongodb disconnected");
 });
 
-app.use("/", (req, res, next) => {
-  res.send("Hello world");
-  next();
-});
-
 // middlewares
 app.use(cors({ origin: "http://localhost:3000" }));
 app.use(express.json({ verify: (req, res, buf) => (req["rawBody"] = buf) }));
@@ -65,7 +60,7 @@ app.use((err, req, res, next) => {
 const server = app.listen(process.env.PORT || 8800, () => {
   // on connected
   connect();
-  console.log(`Server is running on port ${process.env.PORT || 8000}`);
+  console.log(`Server is running on port ${process.env.PORT || 8800}`);
 });
 
 const io = new Server(server, {
