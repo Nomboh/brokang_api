@@ -76,6 +76,7 @@ export const login = catchAsync(async (req, res, next) => {
       res
         .cookie("token", token, {
           httpOnly: true,
+          maxAge: 60 * 60 * 24 * 72,
         })
         .status(200)
         .json({
@@ -238,5 +239,5 @@ export const isLogined = (req, res) => {
 };
 
 export const logOut = (req, res) => {
-  res.clearCookie("token").status(200).json({ status: "success" });
+  res.clearCookie("token").status(204).json({ status: "success" });
 };

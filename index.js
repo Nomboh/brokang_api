@@ -19,13 +19,23 @@ const app = express();
 dotenv.config();
 
 // middlewares
-app.enable("trust proxy");
-app.use(cors());
+
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
+app.use(cookieParser());
 app.use(helmet());
 app.use(express.json({ verify: (req, res, buf) => (req["rawBody"] = buf) }));
-app.use(cookieParser());
 
 app.use(compression());
+
+app.use((req, res, next) => {
+  // console.log(req.cookies);
+  next();
+});
 
 // routes
 app.use("/api/v1/user", userRouter);
@@ -61,7 +71,7 @@ const server = app.listen(port, () => {
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3001",
+    origin: "http://localhost:3000",
   },
 });
 

@@ -93,7 +93,6 @@ export const getUserProducts = (req, res, next) => {
 
 export const getSellerProducts = catchAsync(async (req, res, next) => {
   req.query.userId = req.params.id;
-  req.query.fields = "name,price,images,likes, reviews";
   next();
 });
 
@@ -103,7 +102,6 @@ export const recommendedProducts = catchAsync(async (req, res, next) => {
 
   req.query.category = product.category;
   req.query.limit = 20;
-  req.query.fields = "name,price,images,likes, reviews, category, tags, userId";
   next();
 });
 
@@ -141,13 +139,13 @@ export const toggleLike = catchAsync(async (req, res, next) => {
     await product.updateOne({ $pull: { likes: userId } });
     res.status(200).json({
       status: "success",
-      message: "product have been unliked",
+      message: "unliked",
     });
   } else {
     await product.updateOne({ $push: { likes: userId } });
     res.status(200).json({
       status: "success",
-      message: "product have been liked",
+      message: "liked",
     });
   }
 });
