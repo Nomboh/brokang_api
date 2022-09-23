@@ -13,9 +13,12 @@ export const getAllProducts = catchAsync(async (req, res, next) => {
   // filtering products based on query params
   const queryObj = { ...req.query };
   const excludedFiels = ["page", "sort", "limit", "fields"];
-  excludedFiels.forEach(el => delete queryObj[el]);
+  excludedFiels.forEach((el) => delete queryObj[el]);
   let queryStr = JSON.stringify(queryObj);
-  queryStr = queryStr.replace(/\b(gte|gt|lte|lt|in)\b/g, match => `$${match}`);
+  queryStr = queryStr.replace(
+    /\b(gte|gt|lte|lt|in)\b/g,
+    (match) => `$${match}`
+  );
   let query = Product.find(JSON.parse(queryStr));
   // filtering base on product Names and Tags
 
@@ -42,11 +45,14 @@ export const getAllProducts = catchAsync(async (req, res, next) => {
     query = query.select(fields);
   }
 
+
   // Pagination
-  const page = parseInt(req.query.page, 10) || 1;
-  const limit = parseInt(req.query.limit, 10);
-  const skip = (page - 1) * limit;
-  query = query.skip(skip).limit(limit);
+  if (req.query.page || req.query.limit) {
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10);
+    const skip = (page - 1) * limit;
+    query = query.skip(skip).limit(limit);
+  }
 
   const products = await query.populate("reviews");
   res.status(200).json({

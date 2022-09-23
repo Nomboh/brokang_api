@@ -14,6 +14,7 @@ import cors from "cors";
 import { Server } from "socket.io";
 import compression from "compression";
 import helmet from "helmet";
+import morgan from "morgan";
 
 const app = express();
 dotenv.config();
@@ -26,11 +27,14 @@ app.use(
     credentials: true,
   })
 );
+
 app.use(cookieParser());
 app.use(helmet());
 app.use(express.json({ verify: (req, res, buf) => (req["rawBody"] = buf) }));
 
 app.use(compression());
+
+app.use(morgan("dev"));
 
 app.use((req, res, next) => {
   // console.log(req.cookies);
@@ -75,27 +79,27 @@ const io = new Server(server, {
   },
 });
 
-io.on("connection", socket => {
+io.on("connection", (socket) => {
   console.log("New user connected");
 
-  socket.on("setup", userData => {
+  socket.on("setup", (userData) => {
     socket.join(userData._id);
     socket.emit("connected");
   });
 
-  socket.on("join room", room => {
+  socket.on("join room", (room) => {
     socket.join(room);
     console.log(`user joined room ${room}`);
   });
 
-  socket.on("typing", room => socket.in(room).emit("typing"));
-  socket.on("stop typing", room => socket.in(room).emit("stop typing"));
+  socket.on("typing", (room) => socket.in(room).emit("typing"));
+  socket.on("stop typing", (room) => socket.in(room).emit("stop typing"));
 
-  socket.on("new message", newMessage => {
+  socket.on("new message", (newMessage) => {
     const conversation = newMessage.conversation;
     if (!conversation.members) return console.log("No conversation found");
 
-    conversation.members.forEach(member => {
+    conversation.members.forEach((member) => {
       if (member._id === newMessage.sender._id) return;
 
       socket.in(member._id).emit("message recieved", newMessage);
