@@ -21,7 +21,6 @@ const router = expree.Router();
 router.post("/", createProduct);
 router.get("/", getAllProducts);
 router.get("/search", getSearchProducts);
-router.get("/userProducts", verifyUser, getUserProducts, getAllProducts);
 router.get("/userProducts", verifyToken, getUserProducts, getAllProducts);
 router.get(
   "/userSaleProducts",
