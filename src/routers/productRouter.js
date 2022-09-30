@@ -14,7 +14,7 @@ import {
   updateProduct,
   getUserSaleProducts,
 } from "../controllers/productController.js";
-import { verifyUser } from "../utils/verify.js";
+import { verifyUser, verifyToken } from "../utils/verify.js";
 
 const router = expree.Router();
 
