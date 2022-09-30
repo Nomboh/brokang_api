@@ -13,22 +13,22 @@ import {
   toggleLike,
   updateProduct,
 } from "../controllers/productController.js";
-import { verifyToken } from "../utils/verify.js";
+import { verifyUser } from "../utils/verify.js";
 
 const router = expree.Router();
 
 router.post("/", createProduct);
 router.get("/", getAllProducts);
 router.get("/search", getSearchProducts);
-router.get("/userProducts", verifyToken, getUserProducts, getAllProducts);
+router.get("/userProducts", verifyUser, getUserProducts, getAllProducts);
 router.get("/sellerProducts/:id", getSellerProducts, getAllProducts);
 
 router.get("/recommendedProducts/:id", recommendedProducts, getAllProducts);
-router.get("/hiddenProducts", verifyToken, getHiddenProducts, getAllProducts);
-router.get("/userlikedProducts", verifyToken, getUserLikedProducts);
+router.get("/hiddenProducts", verifyUser, getHiddenProducts, getAllProducts);
+router.get("/userlikedProducts", verifyUser, getUserLikedProducts);
 router.get("/:id", getProduct);
 router.put("/:id", updateProduct);
 router.delete("/:id", deleteProduct);
-router.put("/:id/likes", verifyToken, toggleLike);
+router.put("/:id/likes", verifyUser, toggleLike);
 
 export default router;

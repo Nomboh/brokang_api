@@ -111,7 +111,10 @@ export const updatePassword = catchAsync(async (req, res, next) => {
               return next(err);
             }
             res
-              .cookie("token", token, { httpOnly: true })
+              .cookie("token", token, {
+                httpOnly: true,
+                maxAge: 60 * 60 * 24 * 72,
+              })
               .status(200)
               .json({ status: "success" });
           }

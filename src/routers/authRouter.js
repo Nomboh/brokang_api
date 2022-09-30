@@ -10,7 +10,7 @@ import {
   logOut,
   isLogined,
 } from "../controllers/authController.js";
-import { verifyUser } from "../utils/verify.js";
+import { verifyToken, verifyUser } from "../utils/verify.js";
 
 const router = express.Router();
 
@@ -30,7 +30,7 @@ router.get("/resetpassword/:id/:token", verifyEmail);
 
 router.post("/resetpassword/:id/:token", resetPassword);
 
-router.put("/updatePassword/:id", verifyUser, updatePassword);
+router.put("/updatePassword", verifyToken, updatePassword);
 
 router.get("/verifyUser/:id", verifyUser, (req, res) =>
   res.send("You are verified")
