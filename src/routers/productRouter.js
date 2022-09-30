@@ -12,6 +12,7 @@ import {
   recommendedProducts,
   toggleLike,
   updateProduct,
+  getUserSaleProducts,
 } from "../controllers/productController.js";
 import { verifyToken } from "../utils/verify.js";
 
@@ -21,6 +22,12 @@ router.post("/", createProduct);
 router.get("/", getAllProducts);
 router.get("/search", getSearchProducts);
 router.get("/userProducts", verifyToken, getUserProducts, getAllProducts);
+router.get(
+  "/userSaleProducts",
+  verifyToken,
+  getUserSaleProducts,
+  getAllProducts
+);
 router.get("/sellerProducts/:id", getSellerProducts, getAllProducts);
 
 router.get("/recommendedProducts/:id", recommendedProducts, getAllProducts);

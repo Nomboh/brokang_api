@@ -85,11 +85,25 @@ export const getFollowers = catchAsync(async (req, res, next) => {
 
   const followers = users.map(us => us._id);
 
+  const stats = await Product.aggregate([
+    {
+      $match: {
+        userId: { $in: followers },
+      },
+    },
+    {
+      $group: {
+        _id: "$userId",
+        count: { $count: {} },
+      },
+    },
+  ]);
+
   res.status(200).json({
     length: users.length,
     status: "success",
     users,
-    followers,
+    stats,
   });
 });
 
@@ -99,10 +113,24 @@ export const getFollowings = catchAsync(async (req, res, next) => {
 
   const followings = users.map(us => us._id);
 
+  const stats = await Product.aggregate([
+    {
+      $match: {
+        userId: { $in: followings },
+      },
+    },
+    {
+      $group: {
+        _id: "$userId",
+        count: { $count: {} },
+      },
+    },
+  ]);
+
   res.status(200).json({
     status: "success",
     length: users.length,
     users,
-    followings,
+    stats,
   });
 });

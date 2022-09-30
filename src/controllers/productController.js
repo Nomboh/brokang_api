@@ -13,14 +13,13 @@ export const getAllProducts = catchAsync(async (req, res, next) => {
   // filtering products based on query params
   const queryObj = { ...req.query };
   const excludedFiels = ["page", "sort", "limit", "fields"];
-  excludedFiels.forEach((el) => delete queryObj[el]);
+  excludedFiels.forEach(el => delete queryObj[el]);
   let queryStr = JSON.stringify(queryObj);
-  queryStr = queryStr.replace(
-    /\b(gte|gt|lte|lt|in)\b/g,
-    (match) => `$${match}`
-  );
+  queryStr = queryStr.replace(/\b(gte|gt|lte|lt|in)\b/g, match => `$${match}`);
   let query = Product.find(JSON.parse(queryStr));
   // filtering base on product Names and Tags
+
+  const docCount = await Product.countDocuments(JSON.parse(queryStr));
 
   const keyword = req.query.search
     ? {
@@ -45,7 +44,6 @@ export const getAllProducts = catchAsync(async (req, res, next) => {
     query = query.select(fields);
   }
 
-
   // Pagination
   if (req.query.page || req.query.limit) {
     const page = parseInt(req.query.page, 10) || 1;
@@ -54,11 +52,12 @@ export const getAllProducts = catchAsync(async (req, res, next) => {
     query = query.skip(skip).limit(limit);
   }
 
-  const products = await query.populate("reviews");
+  const products = await query;
   res.status(200).json({
     status: "success",
     length: products.length,
     products,
+    totalProducts: docCount,
   });
 });
 
@@ -97,6 +96,13 @@ export const getUserProducts = (req, res, next) => {
   next();
 };
 
+export const getUserSaleProducts = (req, res, next) => {
+  const userId = req.user.id;
+  req.query.userId = userId;
+  req.query.state = "sale";
+  next();
+};
+
 export const getSellerProducts = catchAsync(async (req, res, next) => {
   req.query.userId = req.params.id;
   next();
@@ -128,13 +134,25 @@ export const getUserLikedProducts = catchAsync(async (req, res, next) => {
       }
     : {};
   const userId = req.user.id;
-  const products = await Product.find(keyword).find({
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = parseInt(req.query.limit, 10);
+  const skip = (page - 1) * limit;
+  const products = await Product.find(keyword)
+    .find({
+      likes: { $in: userId },
+    })
+    .sort("-createdAt")
+    .skip(skip)
+    .limit(limit);
+
+  const totalProducts = await Product.countDocuments({
     likes: { $in: userId },
   });
   res.status(200).json({
     status: "success",
     length: products.length,
     products,
+    totalProducts,
   });
 });
 

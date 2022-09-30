@@ -76,7 +76,7 @@ export const login = catchAsync(async (req, res, next) => {
       res
         .cookie("token", token, {
           httpOnly: true,
-          maxAge: 60 * 60 * 24 * 72,
+          maxAge: 60 * 60 * 24 * 72 * 1000,
         })
         .status(200)
         .json({
