@@ -26,10 +26,10 @@ const calAmout = item => {
       ? 0
       : parseInt(item.shipping[0].deliveryFee);
 
-  return (item.price + shipping) * 0.00075;
+  return item.price + shipping;
 };
 
-export const webhook = (res, req) => {
+export const webhook = (req, res) => {
   const signature = req.headers["stripe-signature"];
   let event;
 
@@ -39,6 +39,8 @@ export const webhook = (res, req) => {
       signature,
       process.env.STRIPE_WEBHOOK_SECRET
     );
+
+    console.log(event);
   } catch (error) {
     return res.status(400).send(`Webhook Error: ${error.message}`);
   }
@@ -50,7 +52,7 @@ export const webhook = (res, req) => {
 
 export const updatePaymentIntent = catchAsync(async (req, res, next) => {
   const { id } = req.user;
-  const { paymentIntentId } = req.body;
+  const { paymentIntentId, paymentMethodId } = req.body;
 
   const customer = await getCustomer(id);
 
@@ -58,6 +60,8 @@ export const updatePaymentIntent = catchAsync(async (req, res, next) => {
     paymentIntentId,
     {
       customer: customer.id,
+      confirm: true,
+      payment_method: paymentMethodId,
     }
   );
 
@@ -76,20 +80,44 @@ export const setupIntent = catchAsync(async (req, res, next) => {
   res.status(200).json(setupIntents);
 });
 
+// payment intent to save a card
 export const paymentIntent = catchAsync(async (req, res, next) => {
   const customer = await getCustomer(req.user.id);
 
   const { item, description, receipt_email, shipping } = req.body;
 
   const paymentIntent = await stripeInstance.paymentIntents.create({
-    amount: parseInt(calAmout(item) * 100),
-    currency: "usd",
+    amount: parseInt(calAmout(item)),
+    currency: "krw",
     description,
     payment_method_types: ["card"],
     receipt_email,
     shipping,
     setup_future_usage: "off_session",
     customer: customer.id,
+  });
+  res
+    .status(200)
+    .json({ clientSecret: paymentIntent.client_secret, id: paymentIntent.id });
+});
+
+// payment intent for a saved  card
+export const paymentIntentSaved = catchAsync(async (req, res, next) => {
+  const customer = await getCustomer(req.user.id);
+
+  const { item, description, receipt_email, shipping, payment_method_id } =
+    req.body;
+
+  const paymentIntent = await stripeInstance.paymentIntents.create({
+    amount: parseInt(calAmout(item)),
+    currency: "krw",
+    description,
+    receipt_email,
+    shipping,
+    customer: customer.id,
+    payment_method: payment_method_id,
+    off_session: true,
+    confirm: true,
   });
   res
     .status(200)

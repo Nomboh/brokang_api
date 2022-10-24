@@ -11,7 +11,6 @@ import stripeRouter from "./src/routers/stripeRouter.js";
 import message from "./src/routers/message.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import { Server } from "socket.io";
 import compression from "compression";
 import helmet from "helmet";
 import morgan from "morgan";
@@ -69,45 +68,6 @@ mongoose.connect(process.env.MONGO_DB).then(() => {
 
 const port = process.env.PORT || 8000;
 
-const server = app.listen(port, () => {
+app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
-});
-
-const io = new Server(server, {
-  cors: {
-    origin: "http://localhost:3000",
-  },
-});
-
-io.on("connection", (socket) => {
-  console.log("New user connected");
-
-  socket.on("setup", (userData) => {
-    socket.join(userData._id);
-    socket.emit("connected");
-  });
-
-  socket.on("join room", (room) => {
-    socket.join(room);
-    console.log(`user joined room ${room}`);
-  });
-
-  socket.on("typing", (room) => socket.in(room).emit("typing"));
-  socket.on("stop typing", (room) => socket.in(room).emit("stop typing"));
-
-  socket.on("new message", (newMessage) => {
-    const conversation = newMessage.conversation;
-    if (!conversation.members) return console.log("No conversation found");
-
-    conversation.members.forEach((member) => {
-      if (member._id === newMessage.sender._id) return;
-
-      socket.in(member._id).emit("message recieved", newMessage);
-    });
-  });
-
-  socket.off("setup", () => {
-    console.log("user disconnected");
-    socket.leave(userData._id);
-  });
 });
