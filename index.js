@@ -22,7 +22,7 @@ dotenv.config();
 
 app.use(
   cors({
-    origin: "https://brokang-api.onrender.com",
+    origin: "https://brokang.onrender.com",
     credentials: true,
   })
 );
