@@ -77,9 +77,6 @@ export const login = catchAsync(async (req, res, next) => {
         .cookie("token", token, {
           httpOnly: true,
           maxAge: 60 * 60 * 24 * 72 * 1000,
-          sameSite: "none",
-          secure: true,
-          domain: "https://brokang.netlify.app",
         })
         .status(200)
         .json({
@@ -117,9 +114,6 @@ export const updatePassword = catchAsync(async (req, res, next) => {
               .cookie("token", token, {
                 httpOnly: true,
                 maxAge: 60 * 60 * 24 * 72,
-                sameSite: "none",
-                secure: true,
-                domain: "https://brokang.netlify.app",
               })
               .status(200)
               .json({ status: "success" });
