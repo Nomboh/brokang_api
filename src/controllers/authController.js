@@ -78,6 +78,7 @@ export const login = catchAsync(async (req, res, next) => {
           expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
           httpOnly: true,
           sameSite: "none",
+          secure: true,
         })
         .status(200)
         .json({
@@ -116,6 +117,7 @@ export const updatePassword = catchAsync(async (req, res, next) => {
                 expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
                 httpOnly: true,
                 sameSite: "none",
+                secure: true,
               })
               .status(200)
               .json({ status: "success" });
