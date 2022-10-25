@@ -76,6 +76,7 @@ export const login = catchAsync(async (req, res, next) => {
       res
         .cookie("token", token, {
           expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          httpOnly: true,
         })
         .status(200)
         .json({
@@ -112,6 +113,7 @@ export const updatePassword = catchAsync(async (req, res, next) => {
             res
               .cookie("token", token, {
                 expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+                httpOnly: true,
               })
               .status(200)
               .json({ status: "success" });
