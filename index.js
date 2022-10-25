@@ -35,11 +35,6 @@ app.use(compression());
 
 app.use(morgan("dev"));
 
-app.use((req, res, next) => {
-  console.log(req.cookies);
-  next();
-});
-
 app.get("/", (req, res) => {
   res.send("<h1>Hello Brokang backend</h1>");
 });
