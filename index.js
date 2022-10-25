@@ -22,7 +22,7 @@ dotenv.config();
 
 app.use(
   cors({
-    origin: "https://brokang.onrender.com",
+    origin: "https://brokang.netlify.app",
     credentials: true,
   })
 );
