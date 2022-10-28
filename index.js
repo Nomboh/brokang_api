@@ -23,7 +23,7 @@ app.set("trust proxy", 1);
 
 app.use(
   cors({
-    origin: "https://brokang.netlify.app",
+    origin: process.env.BASE_URL,
     credentials: true,
   })
 );

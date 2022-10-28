@@ -13,11 +13,11 @@ import { verifyToken, verifyUser } from "../utils/verify.js";
 const router = express.Router();
 
 router.put("/me", verifyUser, updateMe);
-router.put("/follow/:id", verifyUser, follow);
-router.put("/unfollow/:id", verifyUser, unfollow);
+router.put("/follow/:id", verifyToken, follow);
+router.put("/unfollow/:id", verifyToken, unfollow);
 router.get("/", verifyToken, getAllUsers);
-router.get("/followers", verifyUser, getFollowers);
-router.get("/followings", verifyUser, getFollowings);
+router.get("/followers", verifyToken, getFollowers);
+router.get("/followings", verifyToken, getFollowings);
 router.get("/:id", getUser);
 
 export default router;
