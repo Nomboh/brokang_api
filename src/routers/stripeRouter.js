@@ -8,6 +8,7 @@ import {
   updatePaymentIntent,
   webhook,
   paymentIntentSaved,
+  paymentIntentNormal,
 } from "../controllers/stripeController.js";
 import { verifyToken } from "../utils/verify.js";
 
@@ -22,6 +23,8 @@ router.post("/webhook", webhook);
 router.post("/saved-intent", verifyToken, paymentIntentSaved);
 
 router.post("/save-payment-method", verifyToken, setupIntent);
+
+router.post("/payment", verifyToken, paymentIntentNormal);
 
 router.put("/update-payment-intent", verifyToken, updatePaymentIntent);
 

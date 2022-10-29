@@ -90,10 +90,37 @@ export const paymentIntent = catchAsync(async (req, res, next) => {
     amount: parseInt(calAmout(item)),
     currency: "krw",
     description,
+    metadata: {
+      image: item.images[0],
+    },
     payment_method_types: ["card"],
     receipt_email,
     shipping,
     setup_future_usage: "off_session",
+    customer: customer.id,
+  });
+  res
+    .status(200)
+    .json({ clientSecret: paymentIntent.client_secret, id: paymentIntent.id });
+});
+
+// Normal payment intent
+
+export const paymentIntentNormal = catchAsync(async (req, res, next) => {
+  const customer = await getCustomer(req.user.id);
+
+  const { item, description, receipt_email, shipping } = req.body;
+
+  const paymentIntent = await stripeInstance.paymentIntents.create({
+    amount: parseInt(calAmout(item)),
+    currency: "krw",
+    description,
+    metadata: {
+      image: item.images[0],
+    },
+    payment_method_types: ["card"],
+    receipt_email,
+    shipping,
     customer: customer.id,
   });
   res
@@ -113,6 +140,9 @@ export const paymentIntentSaved = catchAsync(async (req, res, next) => {
     currency: "krw",
     description,
     receipt_email,
+    metadata: {
+      image: item.images[0],
+    },
     shipping,
     customer: customer.id,
     payment_method: payment_method_id,

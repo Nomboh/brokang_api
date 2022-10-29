@@ -31,11 +31,11 @@ router.get(
 router.get("/sellerProducts/:id", getSellerProducts, getAllProducts);
 
 router.get("/recommendedProducts/:id", recommendedProducts, getAllProducts);
-router.get("/hiddenProducts", verifyUser, getHiddenProducts, getAllProducts);
-router.get("/userlikedProducts", verifyUser, getUserLikedProducts);
+router.get("/hiddenProducts", verifyToken, getHiddenProducts, getAllProducts);
+router.get("/userlikedProducts", verifyToken, getUserLikedProducts);
 router.get("/:id", getProduct);
 router.put("/:id", updateProduct);
 router.delete("/:id", deleteProduct);
-router.put("/:id/likes", verifyUser, toggleLike);
+router.put("/:id/likes", verifyToken, toggleLike);
 
 export default router;
