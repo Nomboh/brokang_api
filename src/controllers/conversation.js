@@ -18,7 +18,7 @@ export const createConversation = catchAsync(async (req, res, next) => {
   });
 
   if (conversations.length > 0) {
-    res.status(200).json(conversations[0]);
+    res.status(200).json({ conversation: conversations[0], status: "success" });
   } else {
     const conversation = await Conversation.create({
       members: [req.user.id, req.body.userId],
@@ -28,7 +28,7 @@ export const createConversation = catchAsync(async (req, res, next) => {
       "members",
       "-password"
     );
-    res.status(201).json(conv);
+    res.status(201).json({ conversation: conv, status: "success" });
   }
 });
 

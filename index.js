@@ -8,6 +8,7 @@ import productRouter from "./src/routers/productRouter.js";
 import reviewRouter from "./src/routers/reviewRouter.js";
 import conversation from "./src/routers/conversation.js";
 import stripeRouter from "./src/routers/stripeRouter.js";
+import orderRouter from "./src/routers/orderRouter.js";
 import message from "./src/routers/message.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -49,6 +50,7 @@ app.use("/api/v1/review", reviewRouter);
 app.use("/api/v1/conversation", conversation);
 app.use("/api/v1/message", message);
 app.use("/api/v1/stripe", stripeRouter);
+app.use("/api/v1/order", orderRouter);
 
 // error handler middleware
 app.use((err, req, res, next) => {

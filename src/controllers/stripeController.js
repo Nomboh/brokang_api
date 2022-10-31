@@ -2,6 +2,31 @@ import stripeInstance from "../stripe.js";
 import { catchAsync } from "../utils/async.js";
 import getCustomer from "../utils/getCustomer.js";
 import { createError } from "../utils/error.js";
+import Order from "../model/order.js";
+
+const handleOrder = async data => {
+  if (data) {
+    const { brand, last4 } = data.charges.data[0].payment_method_details.card;
+    const newOrder = new Order({
+      stripeCustomerId: data.customer,
+      price: data.amount,
+      description: data.description,
+      image: data.metadata.image,
+      deliveryStatus: data.status,
+      shipping: data.shipping,
+      brand,
+      last4,
+      sellerId: data.metadata.sellerId,
+      userId: data.metadata.userId,
+    });
+
+    try {
+      await newOrder.save();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+};
 
 const webHookHandlers = {
   "checkout.session.completed": data => {
@@ -11,7 +36,9 @@ const webHookHandlers = {
 
   "payment_intent.succeeded": data => {
     console.log("Payment intent succeeded", data);
+
     //other business logic
+    handleOrder(data);
   },
 
   "payment_intent.payment_failed": data => {
@@ -48,6 +75,8 @@ export const webhook = (req, res) => {
   if (webHookHandlers[event.type]) {
     webHookHandlers[event.type](event.data.object);
   }
+
+  res.send();
 };
 
 export const updatePaymentIntent = catchAsync(async (req, res, next) => {
@@ -92,6 +121,8 @@ export const paymentIntent = catchAsync(async (req, res, next) => {
     description,
     metadata: {
       image: item.images[0],
+      sellerId: item.userId,
+      userId: req.user.id,
     },
     payment_method_types: ["card"],
     receipt_email,
@@ -117,6 +148,8 @@ export const paymentIntentNormal = catchAsync(async (req, res, next) => {
     description,
     metadata: {
       image: item.images[0],
+      sellerId: item.userId,
+      userId: req.user.id,
     },
     payment_method_types: ["card"],
     receipt_email,
@@ -142,6 +175,8 @@ export const paymentIntentSaved = catchAsync(async (req, res, next) => {
     receipt_email,
     metadata: {
       image: item.images[0],
+      sellerId: item.userId,
+      userId: req.user.id,
     },
     shipping,
     customer: customer.id,
