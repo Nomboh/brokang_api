@@ -13,7 +13,16 @@ export const getAllProducts = catchAsync(async (req, res, next) => {
   // filtering products based on query params
   const queryObj = { ...req.query };
   const excludedFiels = ["page", "sort", "limit", "fields"];
+
+  if (queryObj) {
+    const queryObjArr = Object.entries(queryObj);
+    for (const [key, value] of queryObjArr) {
+      if (value === "") excludedFiels.push(key);
+    }
+  }
+
   excludedFiels.forEach(el => delete queryObj[el]);
+
   let queryStr = JSON.stringify(queryObj);
   queryStr = queryStr.replace(/\b(gte|gt|lte|lt|in)\b/g, match => `$${match}`);
   let query = Product.find(JSON.parse(queryStr));
@@ -46,6 +55,14 @@ export const getAllProducts = catchAsync(async (req, res, next) => {
 
   // Pagination
   if (req.query.page || req.query.limit) {
+    if (
+      Math.ceil(parseInt(docCount) / parseInt(req.query.limit)) ===
+      parseInt(req.query.page)
+    ) {
+      req.query.hasmore = false;
+    }
+
+    console.log(docCount);
     const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10);
     const skip = (page - 1) * limit;
